@@ -109,10 +109,10 @@
 </head>
 <body>
     <div id="login-container">
-        <h2>Enter your ID to access the chat</h2>
-        <input type="text" id="user-id" placeholder="Enter ID (user1 or admin)">
+        <h2>Enter your name to access the chat</h2>
+        <input type="text" id="user-id" placeholder="Enter your name (Raj or Suji)">
         <button id="login-btn">Login</button>
-        <p id="error-message" style="color: red; display: none;">Invalid ID! Please enter 'user1' or 'admin'.</p>
+        <p id="error-message" style="color: red; display: none;">Invalid name! Please enter either 'Raj' or 'Suji'.</p>
     </div>
 
     <div id="chat-container">
@@ -126,13 +126,13 @@
     </div>
 
     <script>
-        const validIds = ["user1", "admin"]; // The valid IDs
+        const validNames = ["Raj", "Suji"]; // Only Raj and Suji are valid
         let currentUser = "";
 
         document.getElementById('login-btn').addEventListener('click', function() {
-            const enteredId = document.getElementById('user-id').value.trim();
-            if (validIds.includes(enteredId)) {
-                currentUser = enteredId;
+            const enteredName = document.getElementById('user-id').value.trim();
+            if (validNames.includes(enteredName)) {
+                currentUser = enteredName;
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('chat-container').style.display = 'flex';
             } else {
@@ -175,11 +175,9 @@
                 botResponse = "I'm just a bot, but I'm doing great!";
             } else if (userMessage.toLowerCase().includes("bye")) {
                 botResponse = "Goodbye! Have a great day!";
-            } else if (currentUser === "admin") {
-                // Admin-specific response
-                if (userMessage.toLowerCase().includes("admin")) {
-                    botResponse = "Welcome, Admin! How can I assist you today?";
-                }
+            } else if (currentUser === "Raj" || currentUser === "Suji") {
+                // Personalized response for Raj and Suji
+                botResponse = `${currentUser}, you're now chatting with Suji or Raj.`;
             }
             
             setTimeout(() => {
