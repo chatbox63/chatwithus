@@ -109,10 +109,10 @@
 </head>
 <body>
     <div id="login-container">
-        <h2>Enter your name to access the chat</h2>
-        <input type="text" id="user-id" placeholder="Enter your name (Raj or Suji)">
+        <h2>Enter your ID to access the chat</h2>
+        <input type="text" id="user-id" placeholder="Enter ID (user1 or admin)">
         <button id="login-btn">Login</button>
-        <p id="error-message" style="color: red; display: none;">Invalid name! Please enter either 'Raj' or 'Suji'.</p>
+        <p id="error-message" style="color: red; display: none;">Invalid ID! Please enter 'user1' or 'admin'.</p>
     </div>
 
     <div id="chat-container">
@@ -126,13 +126,14 @@
     </div>
 
     <script>
-        const validNames = ["Raj", "Suji"]; // Only Raj and Suji are valid
+        const validIds = ["user1", "admin"]; // Only 'user1' and 'admin' are valid
         let currentUser = "";
 
+        // Login functionality
         document.getElementById('login-btn').addEventListener('click', function() {
-            const enteredName = document.getElementById('user-id').value.trim();
-            if (validNames.includes(enteredName)) {
-                currentUser = enteredName;
+            const enteredId = document.getElementById('user-id').value.trim();
+            if (validIds.includes(enteredId)) {
+                currentUser = enteredId;
                 document.getElementById('login-container').style.display = 'none';
                 document.getElementById('chat-container').style.display = 'flex';
             } else {
@@ -140,6 +141,7 @@
             }
         });
 
+        // Send button functionality
         document.getElementById('send-btn').addEventListener('click', function() {
             const userInput = document.getElementById('user-input').value;
             
@@ -150,12 +152,14 @@
             }
         });
 
+        // Send message by pressing Enter
         document.getElementById('user-input').addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 document.getElementById('send-btn').click();
             }
         });
 
+        // Add message to the chat log
         function addMessage(text, sender) {
             const chatLog = document.getElementById('chat-log');
             const messageDiv = document.createElement('div');
@@ -166,6 +170,7 @@
             chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the latest message
         }
 
+        // Generate bot response
         function generateBotResponse(userMessage) {
             let botResponse = "Sorry, I don't understand.";
             // Simple bot responses based on the user's message
@@ -175,9 +180,9 @@
                 botResponse = "I'm just a bot, but I'm doing great!";
             } else if (userMessage.toLowerCase().includes("bye")) {
                 botResponse = "Goodbye! Have a great day!";
-            } else if (currentUser === "Raj" || currentUser === "Suji") {
-                // Personalized response for Raj and Suji
-                botResponse = `${currentUser}, you're now chatting with Suji or Raj.`;
+            } else if (currentUser === "user1" || currentUser === "admin") {
+                // Personalized response for user1 and admin
+                botResponse = `${currentUser}, you're now chatting with the other user.`;
             }
             
             setTimeout(() => {
