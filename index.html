@@ -3,192 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temporary Chat Bot</title>
+    <title>Two-Person Chat (No Backend)</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f5f5f5;
-            margin: 0;
         }
 
-        #chat-container {
-            width: 100%;
-            max-width: 400px;
-            height: 600px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            display: none; /* Hide chat initially */
-        }
-
-        #chat-box {
-            width: 100%;
-            height: 100%;
+        .chat-container {
+            background-color: white;
+            width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            background-color: white;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            border-radius: 10px;
         }
 
-        #chat-log {
+        .chat-box {
             flex: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
+            padding: 10px;
+            overflow-y: scroll;
+            border-bottom: 1px solid #ccc;
+            height: 300px;
         }
 
-        #user-input {
-            width: 80%;
+        .input-area {
+            display: flex;
             padding: 10px;
-            border-radius: 5px;
+            background-color: #f8f8f8;
+            border-top: 1px solid #ccc;
+        }
+
+        input {
+            flex: 1;
+            padding: 8px;
             border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
-        #send-btn {
-            width: 15%;
-            padding: 10px;
+        button {
+            padding: 8px 12px;
+            margin-left: 8px;
             border: none;
-            background-color: #4CAF50;
+            background-color: #007BFF;
             color: white;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 4px;
         }
 
-        #send-btn:hover {
-            background-color: #45a049;
+        button:hover {
+            background-color: #0056b3;
         }
 
         .message {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 80%;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 4px;
+            max-width: 70%;
         }
 
-        .user-message {
-            background-color: #d4f1a7;
+        .user1-message {
+            background-color: #e0f7fa;
             align-self: flex-end;
         }
 
-        .bot-message {
+        .user2-message {
             background-color: #f1f1f1;
             align-self: flex-start;
-        }
-
-        #login-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #login-container input {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        #login-container button {
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #login-container button:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <div id="login-container">
-        <h2>Enter your ID to access the chat</h2>
-        <input type="text" id="user-id" placeholder="Enter ID (user1 or admin)">
-        <button id="login-btn">Login</button>
-        <p id="error-message" style="color: red; display: none;">Invalid ID! Please enter 'user1' or 'admin'.</p>
-    </div>
 
-    <div id="chat-container">
-        <div id="chat-box">
-            <div id="chat-log">
-                <!-- Messages will be appended here -->
-            </div>
-            <input type="text" id="user-input" placeholder="Type a message..." autofocus>
-            <button id="send-btn">Send</button>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <!-- Messages will be displayed here -->
+        </div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Type a message..." />
+            <button onclick="sendMessage()">Send</button>
         </div>
     </div>
 
     <script>
-        const validIds = ["user1", "admin"]; // Only 'user1' and 'admin' are valid
-        let currentUser = "";
+        // User IDs
+        const user1 = { id: 1255, name: "User1" };
+        const user2 = { id: 5521, name: "User2" };
 
-        // Login functionality
-        document.getElementById('login-btn').addEventListener('click', function() {
-            const enteredId = document.getElementById('user-id').value.trim();
-            if (validIds.includes(enteredId)) {
-                currentUser = enteredId;
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'flex';
-            } else {
-                document.getElementById('error-message').style.display = 'block';
+        // Current user sending messages (simulate user1 sending first)
+        let currentUser = user1;
+
+        // Function to send message
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const messageText = input.value.trim();
+
+            if (messageText !== "") {
+                displayMessage(messageText, currentUser);  // Display user's message
+
+                // Save message to localStorage
+                saveMessage(messageText, currentUser);
+
+                input.value = "";  // Clear input field
+                input.focus();
+
+                // Switch users for the next message
+                currentUser = currentUser.id === user1.id ? user2 : user1;
             }
-        });
-
-        // Send button functionality
-        document.getElementById('send-btn').addEventListener('click', function() {
-            const userInput = document.getElementById('user-input').value;
-            
-            if (userInput.trim() !== "") {
-                addMessage(userInput, 'user');
-                generateBotResponse(userInput);
-                document.getElementById('user-input').value = ''; // Clear the input
-            }
-        });
-
-        // Send message by pressing Enter
-        document.getElementById('user-input').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                document.getElementById('send-btn').click();
-            }
-        });
-
-        // Add message to the chat log
-        function addMessage(text, sender) {
-            const chatLog = document.getElementById('chat-log');
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-            messageDiv.textContent = text;
-            chatLog.appendChild(messageDiv);
-            chatLog.scrollTop = chatLog.scrollHeight; // Scroll to the latest message
         }
 
-        // Generate bot response
-        function generateBotResponse(userMessage) {
-            let botResponse = "Sorry, I don't understand.";
-            // Simple bot responses based on the user's message
-            if (userMessage.toLowerCase().includes("hello")) {
-                botResponse = "Hi! How can I help you?";
-            } else if (userMessage.toLowerCase().includes("how are you")) {
-                botResponse = "I'm just a bot, but I'm doing great!";
-            } else if (userMessage.toLowerCase().includes("bye")) {
-                botResponse = "Goodbye! Have a great day!";
-            } else if (currentUser === "user1" || currentUser === "admin") {
-                // Personalized response for user1 and admin
-                botResponse = `${currentUser}, you're now chatting with the other user.`;
-            }
-            
-            setTimeout(() => {
-                addMessage(botResponse, 'bot');
-            }, 1000); // Simulate a delay for the bot's response
+        // Function to save messages in localStorage
+        function saveMessage(message, sender) {
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            messages.push({ user: sender.name, message: message });
+            localStorage.setItem('messages', JSON.stringify(messages));
         }
+
+        // Function to display a message in the chat box
+        function displayMessage(message, sender) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(sender.id === user1.id ? 'user1-message' : 'user2-message');
+            messageElement.textContent = `${sender.name}: ${message}`;
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;  // Scroll to the bottom
+        }
+
+        // Load and display all messages from localStorage
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            messages.forEach(msg => {
+                const sender = msg.user === "User1" ? user1 : user2;
+                displayMessage(msg.message, sender);
+            });
+        }
+
+        // Load messages when the page loads
+        window.onload = loadMessages;
     </script>
+
 </body>
 </html>
